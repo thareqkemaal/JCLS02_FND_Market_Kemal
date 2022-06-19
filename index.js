@@ -47,8 +47,15 @@ const addProduct = () => {
     let expire = form.elements["prodexpire"].value;
 
     // input data ke database
-    databaseProduct.push(new productFnb(id, name, image, sku, category, stock, price, expire));
-
+    if (expire == ""){
+        if (category == "General"){
+        databaseProduct.push(new dbProduct(id, name, image, sku, category, stock, price));
+        } else {
+            alert(`Belum Memasukkan Tanggal Expire⚠️`);
+        }
+    } else {
+        databaseProduct.push(new productFnb(id, name, image, sku, category, stock, price, expire));
+    }
     // print data
     printData(databaseProduct);
 
