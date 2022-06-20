@@ -77,20 +77,37 @@ const addProduct = () => {
     printData();
 } ;  
 
-const printData = (data = databaseProduct) => {
+const printData = (data = databaseProduct, value) => {
     document.getElementById("listdata").innerHTML = data.map((val, idx) => {
-        return `<tr>
-        <td>${idx + 1}</td>
-        <td>${val.sku}</td>
-        <td><img src="${val.image}" width="75px"></td>
-        <td>${val.name}</td>
-        <td>${val.category}</td>
-        <td>${val.stock}</td>
-        <td>Rp. ${val.price.toLocaleString("id")},00</td>
-        <td>${val.expire ? val.expire : "-"}</td>
-        <td><button type="button" onClick="editBtn(${val.id})">Edit</button>
-        <button type="button" onClick="delBtn(${val.id})">Delete</button></td>
-        </tr>`
+        if (val.id == value){
+            return `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${val.sku}</td>
+                <td><img src="${val.image}" width="75px"></td>
+                <td><input id="editname" type="text" value="${val.name}"/></td>
+                <td>${val.category}</td>
+                <td><input id="editstock" type="number" value="${val.stock}"/></td>
+                <td><input id="editprice" type="number" value="${val.price}"/></td>
+                <td>${val.expire ? val.expire : "-"}</td>
+                <td><button type="button" onClick="saveBtn('${val.sku}')">Save</button>
+                <button type="button" onClick="cancelBtn(${val.id})">Cancel</button></td>
+            </tr>`
+        } else {
+            return `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${val.sku}</td>
+                <td><img src="${val.image}" width="75px"></td>
+                <td>${val.name}</td>
+                <td>${val.category}</td>
+                <td>${val.stock}</td>
+                <td>Rp. ${val.price.toLocaleString("id")},00</td>
+                <td>${val.expire ? val.expire : "-"}</td>
+                <td><button type="button" onClick="editBtn(${val.id})">Edit</button>
+                <button type="button" onClick="delBtn(${val.id})">Delete</button></td>
+            </tr>`
+        }
     }).join('');
 };
 
@@ -164,5 +181,33 @@ const resetFilter = () => {
 };
         
 const editBtn = (value) => {
-            
+    printData(databaseProduct, value);
+};
+
+const saveBtn = (valuesku) => {
+    // cari index yang sama dengan yang di edit ==> findIndex
+    let searchIndex = databaseProduct.findIndex((val) => val.sku == valuesku);
+
+    let splitsku = [];
+    splitsku = valuesku.split("-");
+    // compile semua data yang diedit jadi 1 object
+
+    let editCompile = {
+        id: splitsku[1],
+        sku: valuesku,
+        image: databaseProduct[searchIndex].image,
+        name: document.getElementById("editname").value,
+        category: databaseProduct[searchIndex].category,
+        stock: parseInt(document.getElementById("editstock").value),
+        price: parseInt(document.getElementById("editprice").value),
+        expire: databaseProduct[searchIndex].expire
+    };
+    // update data compile ke index yang dipilih
+    databaseProduct[searchIndex] = editCompile;
+    // cetak ulang
+    printData(databaseProduct);
+};
+
+const cancelBtn = () => {
+    printData();
 };
