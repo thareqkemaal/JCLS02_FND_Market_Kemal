@@ -24,7 +24,7 @@ let databaseProduct = [
     new productFnb(4, "Pisang", "https://img.okezone.com/content/2020/05/15/298/2214844/ciri-ciri-pisang-matang-sempurna-bReK2YGBA0.jpg", "SKU-4-228344", "FnB", 100, 1000, "2022-06-25")
 ];
 
-console.log(databaseProduct);
+// console.log(databaseProduct);
 
 let getId = 5;
 let addId = 5;
@@ -102,10 +102,13 @@ const printData = (data = databaseProduct, value) => {
                 <td>${val.name}</td>
                 <td>${val.category}</td>
                 <td>${val.stock}</td>
-                <td>Rp. ${val.price.toLocaleString("id")},00</td>
+                <td>Rp. ${val.price.toLocaleString("id")}</td>
                 <td>${val.expire ? val.expire : "-"}</td>
-                <td><button type="button" onClick="editBtn(${val.id})">Edit</button>
-                <button type="button" onClick="delBtn(${val.id})">Delete</button></td>
+                <td>
+                <button type="button" onClick="buyBtn(${val.id})">Buy</button>
+                <button type="button" onClick="editBtn(${val.id})">Edit</button>
+                <button type="button" onClick="delBtn(${val.id})">Delete</button>
+                </td>
             </tr>`
         }
     }).join('');
@@ -182,7 +185,8 @@ const saveBtn = (valueid) => {
     let searchIndex = databaseProduct.findIndex((val) => val.id == valueid);
 
     // compile semua data yang diedit jadi 1 object
-    let editCompile = {
+    let editCompile = 
+    {
         id: valueid,
         sku: databaseProduct[searchIndex].sku,
         image: databaseProduct[searchIndex].image,
@@ -201,3 +205,123 @@ const saveBtn = (valueid) => {
 const cancelBtn = () => {
     printData();
 };
+
+class BuyProduct {
+    constructor(_id, _sku, _image, _name, _price, _qty, _subtotal){
+        this.id = _id;
+        this.sku = _sku;
+        this.image = _image;
+        this.name = _name;
+        this.price = _price;
+        this.qty = _qty;
+        this.subtotal = _subtotal;
+    };
+};
+
+// button function
+const printCart = () => {
+    let list = cart.map ((val, idx) => {
+        return `
+        <tr>
+            <td>${idx + 1}</td>
+            <td>${val.sku}</td>
+            <td><img src="${val.image}" width="75px"></td>
+            <td>${val.name}</td>
+            <td>Rp. ${val.price.toLocaleString("id")}</td>
+            <td>
+            <button type="button" id="decrementBuy">-</button>
+            ${val.qty}
+            <button type="button" id="incrementBuy">+</button>
+            </td>
+            <td>Rp. ${val.subtotal.toLocaleString("id")}</td>
+            <td><button type="buton" onClick="delCartBtn(${val.id})">Delete</td>
+        </tr>`
+    });
+
+    document.getElementById("cartlist").innerHTML = list.join("");
+};
+
+// data penampung
+let cart = [];
+
+const buyBtn = (valueid) => {
+    // mengurangi stok pada database
+    let count = 1;
+    let findIndex = databaseProduct.findIndex((val) => val.id == valueid)
+    let buyStock = 
+    {
+        id: valueid,
+        sku: databaseProduct[findIndex].sku,
+        image: databaseProduct[findIndex].image,
+        name: databaseProduct[findIndex].name,
+        category: databaseProduct[findIndex].category,
+        stock: databaseProduct[findIndex].stock - count,
+        price: databaseProduct[findIndex].price,
+        expire: databaseProduct[findIndex].expire
+    };
+    databaseProduct[findIndex] = buyStock;
+    printData(databaseProduct);
+
+    // cek produk apakah sudah ada atau belum
+    if (cart.find((val) => val.id == valueid)){
+        let cartIndex = cart.findIndex((val) => val.id == valueid);
+        let qty = cart[cartIndex].qty;
+            let compile = 
+                {
+                    id: valueid,
+                    sku: databaseProduct[findIndex].sku,
+                    image: databaseProduct[findIndex].image,
+                    name: databaseProduct[findIndex].name,
+                    price: databaseProduct[findIndex].price,
+                    qty: qty + 1,
+                    subtotal: (qty + 1) * databaseProduct[findIndex].price
+                };
+            cart[cartIndex] = compile;
+            printCart()
+    } else {
+        let id = valueid;
+        let sku = databaseProduct[findIndex].sku;
+        let image = databaseProduct[findIndex].image;
+        let name = databaseProduct[findIndex].name;
+        let price = databaseProduct[findIndex].price;
+        let qty = count;
+        let subtotal = qty * databaseProduct[findIndex].price;
+            
+        cart.push(new BuyProduct(id, sku, image, name, price, qty, subtotal));
+        printCart();
+    };
+
+    console.log(cart);
+    
+};
+
+// const changeQty = (action, valueid) => {
+//     let list = cart.map((item) => {
+//         let numberQty = item.qty;
+
+//         if (item.id == valueid){
+//             if (action == "plus"){
+//                 numberQty++;
+//             } else if (action == "minus"){
+//                 numberQty--;
+//             }
+//         }
+//         return 
+//     })
+// }
+
+
+
+
+
+
+
+
+
+
+const delCartBtn = (value) => {
+    let index = cart.findIndex((val) => val.id == value);
+    cart.splice(index, 1);
+    printCart();
+};
+
