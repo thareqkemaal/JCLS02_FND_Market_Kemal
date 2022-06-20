@@ -229,9 +229,9 @@ const printCart = () => {
             <td>${val.name}</td>
             <td>Rp. ${val.price.toLocaleString("id")}</td>
             <td>
-            <button type="button" id="decrementBuy">-</button>
+            <button type="button" id="decrementBuy" onClick="decrementQty()">-</button>
             ${val.qty}
-            <button type="button" id="incrementBuy">+</button>
+            <button type="button" id="incrementBuy" onClick="incrementQty()">+</button>
             </td>
             <td>Rp. ${val.subtotal.toLocaleString("id")}</td>
             <td><button type="buton" onClick="delCartBtn(${val.id})">Delete</td>
@@ -295,6 +295,12 @@ const buyBtn = (valueid) => {
     
 };
 
+const delCartBtn = (value) => {
+    let index = cart.findIndex((val) => val.id == value);
+    cart.splice(index, 1);
+    printCart();
+};
+
 // const changeQty = (action, valueid) => {
 //     let list = cart.map((item) => {
 //         let numberQty = item.qty;
@@ -309,19 +315,4 @@ const buyBtn = (valueid) => {
 //         return 
 //     })
 // }
-
-
-
-
-
-
-
-
-
-
-const delCartBtn = (value) => {
-    let index = cart.findIndex((val) => val.id == value);
-    cart.splice(index, 1);
-    printCart();
-};
 
