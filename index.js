@@ -90,7 +90,7 @@ const printData = (data = databaseProduct, value) => {
                 <td><input id="editstock" type="number" value="${val.stock}"/></td>
                 <td><input id="editprice" type="number" value="${val.price}"/></td>
                 <td>${val.expire ? val.expire : "-"}</td>
-                <td><button type="button" onClick="saveBtn('${val.sku}')">Save</button>
+                <td><button type="button" onClick="saveBtn(${val.id})">Save</button>
                 <button type="button" onClick="cancelBtn(${val.id})">Cancel</button></td>
             </tr>`
         } else {
@@ -158,17 +158,10 @@ const filter = () => {
 };
 
 const delBtn = (value) => {
-    // databaseProduct.forEach((val, idx) => {
-        //     if(val.id == value){
-            //         databaseProduct.splice(idx, 1);
-            //     }
-            // });
-            // printData();
-
-            let index = databaseProduct.findIndex((val) => val.id == value);
-            databaseProduct.splice(index, 1);
-            printData();
-        };
+    let index = databaseProduct.findIndex((val) => val.id == value);
+    databaseProduct.splice(index, 1);
+    printData();
+};
         
 const resetFilter = () => {
     let form = document.getElementById("filter-data");
@@ -184,17 +177,14 @@ const editBtn = (value) => {
     printData(databaseProduct, value);
 };
 
-const saveBtn = (valuesku) => {
+const saveBtn = (valueid) => {
     // cari index yang sama dengan yang di edit ==> findIndex
-    let searchIndex = databaseProduct.findIndex((val) => val.sku == valuesku);
+    let searchIndex = databaseProduct.findIndex((val) => val.id == valueid);
 
-    let splitsku = [];
-    splitsku = valuesku.split("-");
     // compile semua data yang diedit jadi 1 object
-
     let editCompile = {
-        id: splitsku[1],
-        sku: valuesku,
+        id: valueid,
+        sku: databaseProduct[searchIndex].sku,
         image: databaseProduct[searchIndex].image,
         name: document.getElementById("editname").value,
         category: databaseProduct[searchIndex].category,
