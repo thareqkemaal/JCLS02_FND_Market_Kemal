@@ -90,8 +90,8 @@ const printData = (data = databaseProduct, value) => {
                 <td><input id="editstock" type="number" value="${val.stock}"/></td>
                 <td><input id="editprice" type="number" value="${val.price}"/></td>
                 <td>${val.expire ? val.expire : "-"}</td>
-                <td><button type="button" onClick="saveBtn(${val.id})">Save</button>
-                <button type="button" onClick="cancelBtn(${val.id})">Cancel</button></td>
+                <td><button type="button" onclick="saveBtn(${val.id})">Save</button>
+                <button type="button" onclick="cancelBtn(${val.id})">Cancel</button></td>
             </tr>`
         } else {
             return `
@@ -105,9 +105,9 @@ const printData = (data = databaseProduct, value) => {
                 <td>Rp. ${val.price.toLocaleString("id")}</td>
                 <td>${val.expire ? val.expire : "-"}</td>
                 <td>
-                <button type="button" onClick="buyBtn(${val.id})">Buy</button>
-                <button type="button" onClick="editBtn(${val.id})">Edit</button>
-                <button type="button" onClick="delBtn(${val.id})">Delete</button>
+                <button type="button" onclick="buyBtn(${val.id})">Buy</button>
+                <button type="button" onclick="editBtn(${val.id})">Edit</button>
+                <button type="button" onclick="delBtn(${val.id})">Delete</button>
                 </td>
             </tr>`
         }
@@ -229,12 +229,12 @@ const printCart = () => {
             <td>${val.name}</td>
             <td>Rp. ${val.price.toLocaleString("id")}</td>
             <td>
-            <button type="button" onClick="changeQty('minus', ${val.id})">-</button>
+            <button type="button" onclick="changeQty('minus', ${val.id})">-</button>
             ${val.qty}
-            <button type="button" onClick="changeQty('plus', ${val.id})">+</button>
+            <button type="button" onclick="changeQty('plus', ${val.id})">+</button>
             </td>
             <td>Rp. ${val.subtotal.toLocaleString("id")}</td>
-            <td><button type="buton" onClick="delCartBtn(${val.id})">Delete</td>
+            <td><button type="buton" onclick="delCartBtn(${val.id})">Delete</td>
         </tr>`
     });
 
@@ -248,7 +248,7 @@ const buyBtn = (valueid) => {
     // mengurangi stok pada database
     let count = 1;
     let findIndex = databaseProduct.findIndex((val) => val.id == valueid)
-    let buyStock = 
+    let updateStock = 
     {
         id: valueid,
         sku: databaseProduct[findIndex].sku,
@@ -259,7 +259,7 @@ const buyBtn = (valueid) => {
         price: databaseProduct[findIndex].price,
         expire: databaseProduct[findIndex].expire
     };
-    databaseProduct[findIndex] = buyStock;
+    databaseProduct[findIndex] = updateStock;
     printData(databaseProduct);
 
     // cek produk apakah sudah ada atau belum
@@ -292,7 +292,7 @@ const changeQty = (action, valueid) => {
 
     let qty = cart[cartIndex].qty;
         if (action == "plus"){
-        let buyStock = 
+        let updateStock = 
             {
                 id: valueid,
                 sku: databaseProduct[findIndex].sku,
@@ -303,7 +303,7 @@ const changeQty = (action, valueid) => {
                 price: databaseProduct[findIndex].price,
                 expire: databaseProduct[findIndex].expire
             };
-        databaseProduct[findIndex] = buyStock;
+        databaseProduct[findIndex] = updateStock;
         printData(databaseProduct);
 
         let compile = 
@@ -319,7 +319,7 @@ const changeQty = (action, valueid) => {
         cart[cartIndex] = compile;
         printCart()   
         } else if (action == "minus"){
-        let buyStock = 
+        let updateStock = 
             {
                 id: valueid,
                 sku: databaseProduct[findIndex].sku,
@@ -330,7 +330,7 @@ const changeQty = (action, valueid) => {
                 price: databaseProduct[findIndex].price,
                 expire: databaseProduct[findIndex].expire
             };
-        databaseProduct[findIndex] = buyStock;
+        databaseProduct[findIndex] = updateStock;
         printData(databaseProduct);
 
         let compile = 
@@ -349,4 +349,8 @@ const changeQty = (action, valueid) => {
         console.log(cart)
 };
 
+const clearCart = () => {
+    cart = [];
+    printCart();
+}
 
