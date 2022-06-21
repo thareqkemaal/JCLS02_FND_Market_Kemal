@@ -18,13 +18,15 @@ class productFnb extends dbProduct {
     }
 }
 let databaseProduct = [
-    new dbProduct(1, "Jaket", "https://images.tokopedia.net/img/cache/500-square/VqbcmM/2021/1/11/af28cec6-6626-47d1-8bcc-aa08d1b0efa0.jpg", "SKU-1-912087", "General", 10, 100000),
-    new productFnb(2, "Apel", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwchWJmM3HrPZEdeBeQLhiICRlp3xEb9kARw&usqp=CAU", "SKU-2-782319", "FnB", 50, 2500, "2022-07-09"),
+    new dbProduct(1, "Jaket", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtyhGHFxPI37CP-wHiauWF-Fv9n45xtNx5Mg&usqp=CAU", "SKU-1-912087", "General", 10, 100000),
+    new productFnb(2, "Apel", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwchWJmM3HrPZEdeBeQLhiICRlp3xEb9kARw&usqp=CAU", "SKU-2-782319", "FnB", 15, 2500, "2022-07-09"),
     new dbProduct(3, "Helm", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzcNYrnAEVH6sQj_eu0mSXqHN0hQZkk0etvw&usqp=CAU", "SKU-3-612782", "General", 20, 200000),
-    new productFnb(4, "Pisang", "https://img.okezone.com/content/2020/05/15/298/2214844/ciri-ciri-pisang-matang-sempurna-bReK2YGBA0.jpg", "SKU-4-228344", "FnB", 100, 1000, "2022-06-25")
+    new productFnb(4, "Pisang", "https://img.okezone.com/content/2020/05/15/298/2214844/ciri-ciri-pisang-matang-sempurna-bReK2YGBA0.jpg", "SKU-4-228344", "FnB", 10, 1000, "2022-06-25")
 ];
 
 // console.log(databaseProduct);
+
+/////////////////////////// PRINT DATABASE /////////////////////////////////
 
 let getId = 5;
 let addId = 5;
@@ -114,7 +116,15 @@ const printData = (data = databaseProduct, value) => {
     }).join('');
 };
 
+const delBtn = (value) => {
+    let index = databaseProduct.findIndex((val) => val.id == value);
+    databaseProduct.splice(index, 1);
+    printData();
+};
 
+printData(databaseProduct);
+
+/////////////////////////// FILTER FEATURE /////////////////////////////////
 const filter = () => {
     let form = document.getElementById("filter-data");
     
@@ -159,13 +169,7 @@ const filter = () => {
     });
     printData(result);
 };
-
-const delBtn = (value) => {
-    let index = databaseProduct.findIndex((val) => val.id == value);
-    databaseProduct.splice(index, 1);
-    printData();
-};
-        
+       
 const resetFilter = () => {
     let form = document.getElementById("filter-data");
     form.elements["filname"].value = null;
@@ -175,7 +179,8 @@ const resetFilter = () => {
     
     printData();
 };
-        
+
+/////////////////////////// EDIT FEATURE /////////////////////////////////
 const editBtn = (value) => {
     printData(databaseProduct, value);
 };
@@ -206,6 +211,7 @@ const cancelBtn = () => {
     printData();
 };
 
+/////////////////////////// CART FEATURE /////////////////////////////////
 class BuyProduct {
     constructor(_id, _sku, _image, _name, _price, _qty, _subtotal){
         this.id = _id;
@@ -241,49 +247,79 @@ const printCart = () => {
     document.getElementById("cartlist").innerHTML = list.join("");
 };
 
-// data penampung
+// data penampung cart
 let cart = [];
 
 const buyBtn = (valueid) => {
     // mengurangi stok pada database
     let count = 1;
     let findIndex = databaseProduct.findIndex((val) => val.id == valueid)
-    let updateStock = 
-    {
-        id: valueid,
-        sku: databaseProduct[findIndex].sku,
-        image: databaseProduct[findIndex].image,
-        name: databaseProduct[findIndex].name,
-        category: databaseProduct[findIndex].category,
-        stock: databaseProduct[findIndex].stock - count,
-        price: databaseProduct[findIndex].price,
-        expire: databaseProduct[findIndex].expire
-    };
-    databaseProduct[findIndex] = updateStock;
-    printData(databaseProduct);
+    let cartIndex = cart.findIndex((val) => val.id == valueid)
+    if (databaseProduct[findIndex].stock > 0){
+        let updateStock = 
+        {
+            id: valueid,
+            sku: databaseProduct[findIndex].sku,
+            image: databaseProduct[findIndex].image,
+            name: databaseProduct[findIndex].name,
+            category: databaseProduct[findIndex].category,
+            stock: databaseProduct[findIndex].stock - count,
+            price: databaseProduct[findIndex].price,
+            expire: databaseProduct[findIndex].expire
+        };
+        databaseProduct[findIndex] = updateStock;
+        printData(databaseProduct);
 
-    // cek produk apakah sudah ada atau belum
-    if (cart.find((val) => val.id == valueid)){
-        changeQty("plus", valueid);
+        // cek produk apakah sudah ada atau belum
+        if (cartIndex >= 0){
+            cart[cartIndex].qty += 1;
+            cart[cartIndex].subtotal = cart[cartIndex].qty * databaseProduct[findIndex].price;
+    
+            databaseProduct[findIndex].stock - 1;
+            printCart()
+        } else {
+            let id = valueid;
+            let sku = databaseProduct[findIndex].sku;
+            let image = databaseProduct[findIndex].image;
+            let name = databaseProduct[findIndex].name;
+            let price = databaseProduct[findIndex].price;
+            let qty = parseInt(count);
+            let subtotal = parseInt(qty * databaseProduct[findIndex].price);
+                
+            cart.push(new BuyProduct(id, sku, image, name, price, qty, subtotal));
+            printCart();
+        };
     } else {
-        let id = valueid;
-        let sku = databaseProduct[findIndex].sku;
-        let image = databaseProduct[findIndex].image;
-        let name = databaseProduct[findIndex].name;
-        let price = databaseProduct[findIndex].price;
-        let qty = parseInt(count);
-        let subtotal = parseInt(qty * databaseProduct[findIndex].price);
-            
-        cart.push(new BuyProduct(id, sku, image, name, price, qty, subtotal));
+        alert(`Stock Barang Habis`);
+        printData(databaseProduct);
         printCart();
-    };
+    }
+
     console.log(cart);
 };
 
-const delCartBtn = (value) => {
-    let index = cart.findIndex((val) => val.id == value);
+const delCartBtn = (valueid) => {
+    let index = cart.findIndex((val) => val.id == valueid);
+    let findIndex = databaseProduct.findIndex((val) => val.id == valueid);
+
+    let count = cart[index].qty;
+    let updateStock = 
+        {
+            id: valueid,
+            sku: databaseProduct[findIndex].sku,
+            image: databaseProduct[findIndex].image,
+            name: databaseProduct[findIndex].name,
+            category: databaseProduct[findIndex].category,
+            stock: databaseProduct[findIndex].stock + count,
+            price: databaseProduct[findIndex].price,
+            expire: databaseProduct[findIndex].expire
+        };
+    databaseProduct[findIndex] = updateStock;
+    printData(databaseProduct);
+
     cart.splice(index, 1);
     printCart();
+    
 };
 
 const changeQty = (action, valueid) => {
@@ -292,65 +328,91 @@ const changeQty = (action, valueid) => {
 
     let qty = cart[cartIndex].qty;
         if (action == "plus"){
-        let updateStock = 
-            {
-                id: valueid,
-                sku: databaseProduct[findIndex].sku,
-                image: databaseProduct[findIndex].image,
-                name: databaseProduct[findIndex].name,
-                category: databaseProduct[findIndex].category,
-                stock: databaseProduct[findIndex].stock - 1,
-                price: databaseProduct[findIndex].price,
-                expire: databaseProduct[findIndex].expire
-            };
-        databaseProduct[findIndex] = updateStock;
-        printData(databaseProduct);
+            if (databaseProduct[findIndex].stock > 0){
+                let updateStock = 
+                    {
+                        id: valueid,
+                        sku: databaseProduct[findIndex].sku,
+                        image: databaseProduct[findIndex].image,
+                        name: databaseProduct[findIndex].name,
+                        category: databaseProduct[findIndex].category,
+                        stock: databaseProduct[findIndex].stock - 1,
+                        price: databaseProduct[findIndex].price,
+                        expire: databaseProduct[findIndex].expire
+                    };
+                databaseProduct[findIndex] = updateStock;
+                printData(databaseProduct);
 
-        let compile = 
-            {
-                id: valueid,
-                sku: databaseProduct[findIndex].sku,
-                image: databaseProduct[findIndex].image,
-                name: databaseProduct[findIndex].name,
-                price: databaseProduct[findIndex].price,
-                qty: qty + 1,
-                subtotal: (qty + 1) * databaseProduct[findIndex].price
-            };
-        cart[cartIndex] = compile;
-        printCart()   
+                let compile = 
+                    {
+                        id: valueid,
+                        sku: databaseProduct[findIndex].sku,
+                        image: databaseProduct[findIndex].image,
+                        name: databaseProduct[findIndex].name,
+                        price: databaseProduct[findIndex].price,
+                        qty: qty + 1,
+                        subtotal: (qty + 1) * databaseProduct[findIndex].price
+                    };
+                cart[cartIndex] = compile;
+                printCart();
+            } else {
+                alert(`Stock Barang Habis`);
+                printData(databaseProduct);
+                printCart();
+            }
         } else if (action == "minus"){
-        let updateStock = 
-            {
-                id: valueid,
-                sku: databaseProduct[findIndex].sku,
-                image: databaseProduct[findIndex].image,
-                name: databaseProduct[findIndex].name,
-                category: databaseProduct[findIndex].category,
-                stock: databaseProduct[findIndex].stock + 1,
-                price: databaseProduct[findIndex].price,
-                expire: databaseProduct[findIndex].expire
-            };
-        databaseProduct[findIndex] = updateStock;
-        printData(databaseProduct);
+            if(cart[cartIndex].qty > 1){
+                let updateStock = 
+                    {
+                        id: valueid,
+                        sku: databaseProduct[findIndex].sku,
+                        image: databaseProduct[findIndex].image,
+                        name: databaseProduct[findIndex].name,
+                        category: databaseProduct[findIndex].category,
+                        stock: databaseProduct[findIndex].stock + 1,
+                        price: databaseProduct[findIndex].price,
+                        expire: databaseProduct[findIndex].expire
+                    };
+                databaseProduct[findIndex] = updateStock;
+                printData(databaseProduct);
+        
+                let compile = 
+                    {
+                        id: valueid,
+                        sku: databaseProduct[findIndex].sku,
+                        image: databaseProduct[findIndex].image,
+                        name: databaseProduct[findIndex].name,
+                        price: databaseProduct[findIndex].price,
+                        qty: qty - 1,
+                        subtotal: (qty - 1) * databaseProduct[findIndex].price
+                    };
+                cart[cartIndex] = compile;
+                printCart() 
+            } else if (cart[cartIndex].qty <= 1){
+                let updateStock = 
+                    {
+                        id: valueid,
+                        sku: databaseProduct[findIndex].sku,
+                        image: databaseProduct[findIndex].image,
+                        name: databaseProduct[findIndex].name,
+                        category: databaseProduct[findIndex].category,
+                        stock: databaseProduct[findIndex].stock + 1,
+                        price: databaseProduct[findIndex].price,
+                        expire: databaseProduct[findIndex].expire
+                    };
+                databaseProduct[findIndex] = updateStock;
+                printData(databaseProduct);
 
-        let compile = 
-            {
-                id: valueid,
-                sku: databaseProduct[findIndex].sku,
-                image: databaseProduct[findIndex].image,
-                name: databaseProduct[findIndex].name,
-                price: databaseProduct[findIndex].price,
-                qty: qty - 1,
-                subtotal: (qty - 1) * databaseProduct[findIndex].price
-            };
-        cart[cartIndex] = compile;
-        printCart() 
-        }
+                let cartIndex = cart.findIndex((val) => val.id == valueid);
+                cart.splice(cartIndex, 1);
+                printCart();
+            }
+        } 
         console.log(cart)
 };
 
 const clearCart = () => {
     cart = [];
     printCart();
-}
+};
 
