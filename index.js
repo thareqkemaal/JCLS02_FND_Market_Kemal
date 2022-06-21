@@ -229,9 +229,9 @@ const printCart = () => {
             <td>${val.name}</td>
             <td>Rp. ${val.price.toLocaleString("id")}</td>
             <td>
-            <button type="button" id="decrementBuy" onClick="decrementQty()">-</button>
+            <button type="button" onClick="changeQty('minus', ${val.id})">-</button>
             ${val.qty}
-            <button type="button" id="incrementBuy" onClick="incrementQty()">+</button>
+            <button type="button" onClick="changeQty('plus', ${val.id})">+</button>
             </td>
             <td>Rp. ${val.subtotal.toLocaleString("id")}</td>
             <td><button type="buton" onClick="delCartBtn(${val.id})">Delete</td>
@@ -264,35 +264,20 @@ const buyBtn = (valueid) => {
 
     // cek produk apakah sudah ada atau belum
     if (cart.find((val) => val.id == valueid)){
-        let cartIndex = cart.findIndex((val) => val.id == valueid);
-        let qty = cart[cartIndex].qty;
-            let compile = 
-                {
-                    id: valueid,
-                    sku: databaseProduct[findIndex].sku,
-                    image: databaseProduct[findIndex].image,
-                    name: databaseProduct[findIndex].name,
-                    price: databaseProduct[findIndex].price,
-                    qty: qty + 1,
-                    subtotal: (qty + 1) * databaseProduct[findIndex].price
-                };
-            cart[cartIndex] = compile;
-            printCart()
+        changeQty("plus", valueid);
     } else {
         let id = valueid;
         let sku = databaseProduct[findIndex].sku;
         let image = databaseProduct[findIndex].image;
         let name = databaseProduct[findIndex].name;
         let price = databaseProduct[findIndex].price;
-        let qty = count;
-        let subtotal = qty * databaseProduct[findIndex].price;
+        let qty = parseInt(count);
+        let subtotal = parseInt(qty * databaseProduct[findIndex].price);
             
         cart.push(new BuyProduct(id, sku, image, name, price, qty, subtotal));
         printCart();
     };
-
     console.log(cart);
-    
 };
 
 const delCartBtn = (value) => {
@@ -301,18 +286,67 @@ const delCartBtn = (value) => {
     printCart();
 };
 
-// const changeQty = (action, valueid) => {
-//     let list = cart.map((item) => {
-//         let numberQty = item.qty;
+const changeQty = (action, valueid) => {
+    let findIndex = databaseProduct.findIndex((val) => val.id == valueid);
+    let cartIndex = cart.findIndex((val) => val.id == valueid);
 
-//         if (item.id == valueid){
-//             if (action == "plus"){
-//                 numberQty++;
-//             } else if (action == "minus"){
-//                 numberQty--;
-//             }
-//         }
-//         return 
-//     })
-// }
+    let qty = cart[cartIndex].qty;
+        if (action == "plus"){
+        let buyStock = 
+            {
+                id: valueid,
+                sku: databaseProduct[findIndex].sku,
+                image: databaseProduct[findIndex].image,
+                name: databaseProduct[findIndex].name,
+                category: databaseProduct[findIndex].category,
+                stock: databaseProduct[findIndex].stock - 1,
+                price: databaseProduct[findIndex].price,
+                expire: databaseProduct[findIndex].expire
+            };
+        databaseProduct[findIndex] = buyStock;
+        printData(databaseProduct);
+
+        let compile = 
+            {
+                id: valueid,
+                sku: databaseProduct[findIndex].sku,
+                image: databaseProduct[findIndex].image,
+                name: databaseProduct[findIndex].name,
+                price: databaseProduct[findIndex].price,
+                qty: qty + 1,
+                subtotal: (qty + 1) * databaseProduct[findIndex].price
+            };
+        cart[cartIndex] = compile;
+        printCart()   
+        } else if (action == "minus"){
+        let buyStock = 
+            {
+                id: valueid,
+                sku: databaseProduct[findIndex].sku,
+                image: databaseProduct[findIndex].image,
+                name: databaseProduct[findIndex].name,
+                category: databaseProduct[findIndex].category,
+                stock: databaseProduct[findIndex].stock + 1,
+                price: databaseProduct[findIndex].price,
+                expire: databaseProduct[findIndex].expire
+            };
+        databaseProduct[findIndex] = buyStock;
+        printData(databaseProduct);
+
+        let compile = 
+            {
+                id: valueid,
+                sku: databaseProduct[findIndex].sku,
+                image: databaseProduct[findIndex].image,
+                name: databaseProduct[findIndex].name,
+                price: databaseProduct[findIndex].price,
+                qty: qty - 1,
+                subtotal: (qty - 1) * databaseProduct[findIndex].price
+            };
+        cart[cartIndex] = compile;
+        printCart() 
+        }
+        console.log(cart)
+};
+
 
