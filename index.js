@@ -25,6 +25,20 @@ let databaseProduct = [
 ];
 
 // console.log(databaseProduct);
+////////////////////////////// USER LOGIN //////////////////////////////////
+let userName = [];
+
+const loginBtn = () => {
+    user = document.getElementById("user").value;
+    if (user == ''){
+        alert(`Silahkan Login Terlebih Dahulu⚠️`);
+    } else {
+        alert(`Selamat Datang, ${user} !`);
+        userName.push(user);
+    }
+
+    console.log(userName);
+};
 
 /////////////////////////// PRINT DATABASE /////////////////////////////////
 
@@ -107,7 +121,7 @@ const printData = (data = databaseProduct, value) => {
                 <td>Rp. ${val.price.toLocaleString("id")}</td>
                 <td>${val.expire ? val.expire : "-"}</td>
                 <td>
-                <button type="button" onclick="buyBtn(${val.id})">Buy</button>
+                <button type="button" id="buybutton${val.id}" onclick="buyBtn(${val.id})">Buy</button>
                 <button type="button" onclick="editBtn(${val.id})">Edit</button>
                 <button type="button" onclick="delBtn(${val.id})">Delete</button>
                 </td>
@@ -250,6 +264,10 @@ const printCart = () => {
 
 
 const buyBtn = (valueid) => {
+
+if (userName == ''){
+    alert(`Silahkan Login Terlebih Dahulu`);
+} else {
     // mengurangi stok pada database
     let findIndex = databaseProduct.findIndex((val) => val.id == valueid)
     let cartIndex = cart.findIndex((val) => val.id == valueid)
@@ -282,6 +300,7 @@ const buyBtn = (valueid) => {
         printCart();
     }
     console.log(cart);
+}
 };
 
 const delCartBtn = (valueid) => {
@@ -415,19 +434,78 @@ const paymentBtn = () => {
         alert(`Pembelian Anda Berhasil✅`);
         arr.splice(0, arr.length);
         printPayment();
-        document.getElementById("sum").innerHTML = null;
+        document.getElementById("sum").innerHTML = `Rp. 0,-`;
         document.getElementById("cash").value = null;
+        document.getElementById("user").value = null;
+        inputReport(totalPayment);
+        printReport();
     } else if (calculate > 0){
         alert(`Pembelian Anda Berhasil✅. \nBerikut Kembalian Anda Rp. ${calculate.toLocaleString("id")}`);
         arr.splice(0, arr.length);
         printPayment();
-        document.getElementById("sum").innerHTML = null;
+        document.getElementById("sum").innerHTML = `Rp. 0,-`;
         document.getElementById("cash").value = null;
+        document.getElementById("user").value = null;
+        inputReport(totalPayment);
+        printReport();
     } else if (calculate < 0){
         let minus = -calculate;
         let text = `Maaf Uang Anda Kurang Rp. ${minus.toLocaleString("id")}`
         document.getElementById("cashdisplay").innerHTML = text;
         document.getElementById("cash").value = null;
+        printReport();
     }
+};
+
+/////////////////////////// REPORT FEATURE /////////////////////////////////////////
+
+class Report {
+    constructor(_date, _name, _transaction){
+        this.date = _date;
+        this.name = _name;
+        this.transaction = _transaction;
+    }
+};
+
+let reportArr = [];
+
+const inputReport = (totalPayment) => {
+
+    let user = '';
+    for (let i = 0; i < userName.length; i++){
+        user = userName[i];
+    }
+
+    let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0');
+    let yyyy = today.getFullYear();
+    today = `${dd}/${mm}/${yyyy}`;
+
+    let transaction = totalPayment;
+    reportArr.push(new Report(today, user, transaction));
+    console.log(reportArr);
+};
+
+const printReport = () => {
+    let print = reportArr.map((val, idx) => {
+        return `
+        <tr>
+            <td>${idx + 1}</td>
+            <td>${val.date}</td>
+            <td>${val.name}</td>
+            <td>Rp. ${val.transaction.toLocaleString("id")}</td>
+        </tr>`
+    });
+    document.getElementById("report").innerHTML = print.join("");
+
+    let total = 0;
+    reportArr.forEach((val, idx) => {
+        if (reportArr[idx].transaction > 0){
+            total += reportArr[idx].transaction;
+        }
+    })
+    let printTotal = `Total Omzet Rp. ${total.toLocaleString("id")},-`
+    document.getElementById("displayomzet").innerHTML = printTotal;
 };
 

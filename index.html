@@ -9,12 +9,20 @@
         table, td, th, tr{
             border: 1px solid black;
             border-collapse: collapse;
-            padding: 2vw;
+            padding: 1.5vw;
             text-align: center;
         }
     </style>
 </head>
 <body>
+    <div style="max-width: 100vw">
+        <fieldset>
+            <legend>Customer</legend>
+            <input type="text" id="user" placeholder="Username">
+            <button type="button" id="login" onclick="loginBtn()">Login</button>
+            <h3 id="userdisplay"></h3>
+        </fieldset>
+    </div>
     <div style="max-width: 100vw">
         <fieldset>
             <legend>Add Product</legend>
@@ -68,8 +76,6 @@
         </table>
         <fieldset>
             <legend>Cart List</legend>
-            <button type="button" onclick="deleteItem()">Delete Item</button>
-            <button type="button" onclick="checkoutBtn()">Proceed to Checkout</button>
             <br>
             <table>
                 <thead>
@@ -85,9 +91,12 @@
                     </tr>
                 </thead>
                 <tbody id="cartlist">
-
+                    
                 </tbody>
             </table>
+            <br>
+            <button type="button" onclick="deleteItem()">Delete Item</button>
+            <button type="button" onclick="checkoutBtn()">Proceed to Checkout</button>
         </fieldset>
         <fieldset>
             <legend>Checkout</legend>
@@ -112,11 +121,28 @@
                     <tr>
                         <th>Cash on Payment</th>
                         <th><input id="cash" type="number" placeholder="Input Your Payment">
-                            <button id="payment" type="button" onclick="paymentBtn()">Payment</button></th>
+                            <button id="payment" type="button" onclick="paymentBtn()">Click to Pay</button></th>
                     </tr>
                 </thead>
             </table>
             <h3 id="cashdisplay"></h3>
+        </fieldset>
+        <fieldset>
+            <legend>Report Transaction</legend>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Date</th>
+                        <th>User</th>
+                        <th>Total Transaction</th>
+                    </tr>
+                </thead>
+                <tbody id="report">
+
+                </tbody>
+            </table>
+            <h3 id="displayomzet">Total Omzet Rp. 0,-</h3>
         </fieldset>
     </div>
 </body>
