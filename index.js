@@ -188,7 +188,6 @@ const editBtn = (value) => {
 const saveBtn = (valueid) => {
     // cari index yang sama dengan yang di edit ==> findIndex
     let searchIndex = databaseProduct.findIndex((val) => val.id == valueid);
-
     // compile semua data yang diedit jadi 1 object
     let editCompile = 
     {
@@ -243,7 +242,7 @@ const printCart = () => {
             <button type="button" onclick="changeQty('plus', ${val.id})">+</button>
             </td>
             <td>Rp. ${val.subtotal.toLocaleString("id")}</td>
-            <td><button type="buton" onclick="delCartBtn(${val.id})">Delete</td>
+            <td><button type="buton" onclick="delCartBtn(${val.id})">Remove</td>
         </tr>`
     });
     document.getElementById("cartlist").innerHTML = list.join("");
@@ -362,7 +361,6 @@ const deleteItem = () => {
 
 /////////////////////////// CHECKOUT FEATURE //////////////////////////////////////
 let arr = [];
-
 const printPayment = (data = arr) => {
     let list = data.map ((val, idx) => {
         return `
@@ -380,14 +378,12 @@ const checkoutBtn = () => {
             arr.push({id: val.id, sku: val.sku, subtotal: val.subtotal});
         }
     });
-
     arr.forEach((val, idx) => {
         let cartIndex = cart.findIndex((value) => value.id == val.id)
         cart.splice(cartIndex, 1);
     });
-    console.log(`ini cart`, cart);
-    console.log(`ini arr`, arr);
-
+        //console.log(`ini cart`, cart);
+        //console.log(`ini arr`, arr);
     printCart();
     printPayment();
 
@@ -397,15 +393,14 @@ const checkoutBtn = () => {
             sum += arr[idx].subtotal;
         }
     });
-    console.log(sum);
-
-    let summary = `Rp. ${sum.toLocaleString("id")}`
+        //console.log(sum);
+    let summary = `Rp. ${sum.toLocaleString("id")},-`
     document.getElementById("sum").innerHTML = summary;
 };
 
 const paymentBtn = () => {
     let cash = parseInt(document.getElementById("cash").value);
-        console.log(`Ini pembayaran`, cash)
+        //console.log(`Ini pembayaran`, cash)
     let sum = 0; // string
     arr.forEach((val, idx) => {
         if (arr[idx].subtotal > 0){
@@ -413,11 +408,9 @@ const paymentBtn = () => {
         }
     }); 
     let totalPayment = parseInt(sum);
-        console.log(`Ini totalpayment`, totalPayment);
-
+        //console.log(`Ini totalpayment`, totalPayment);
     let calculate = cash - totalPayment;
-        console.log(`Ini calculate`, calculate);
-
+        //console.log(`Ini calculate`, calculate);
     if (calculate == 0){
         alert(`Pembelian Anda Berhasil✅`);
         arr.splice(0, arr.length);
