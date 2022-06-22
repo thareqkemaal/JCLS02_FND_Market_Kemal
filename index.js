@@ -229,7 +229,7 @@ const printCart = () => {
     let list = cart.map ((val, idx) => {
         return `
         <tr>
-            <td>${idx + 1}</td>
+            <td><input type="checkbox" id="checkitem${val.id}" value=${val.id}></td>
             <td>${val.sku}</td>
             <td><img src="${val.image}" width="75px"></td>
             <td>${val.name}</td>
@@ -243,7 +243,6 @@ const printCart = () => {
             <td><button type="buton" onclick="delCartBtn(${val.id})">Delete</td>
         </tr>`
     });
-
     document.getElementById("cartlist").innerHTML = list.join("");
 };
 
@@ -252,22 +251,10 @@ let cart = [];
 
 const buyBtn = (valueid) => {
     // mengurangi stok pada database
-    let count = 1;
     let findIndex = databaseProduct.findIndex((val) => val.id == valueid)
     let cartIndex = cart.findIndex((val) => val.id == valueid)
     if (databaseProduct[findIndex].stock > 0){
-        let updateStock = 
-        {
-            id: valueid,
-            sku: databaseProduct[findIndex].sku,
-            image: databaseProduct[findIndex].image,
-            name: databaseProduct[findIndex].name,
-            category: databaseProduct[findIndex].category,
-            stock: databaseProduct[findIndex].stock - count,
-            price: databaseProduct[findIndex].price,
-            expire: databaseProduct[findIndex].expire
-        };
-        databaseProduct[findIndex] = updateStock;
+        databaseProduct[findIndex].stock -= 1;
         printData(databaseProduct);
 
         // cek produk apakah sudah ada atau belum
@@ -283,7 +270,7 @@ const buyBtn = (valueid) => {
             let image = databaseProduct[findIndex].image;
             let name = databaseProduct[findIndex].name;
             let price = databaseProduct[findIndex].price;
-            let qty = parseInt(count);
+            let qty = 1;
             let subtotal = parseInt(qty * databaseProduct[findIndex].price);
                 
             cart.push(new BuyProduct(id, sku, image, name, price, qty, subtotal));
@@ -294,7 +281,6 @@ const buyBtn = (valueid) => {
         printData(databaseProduct);
         printCart();
     }
-
     console.log(cart);
 };
 
@@ -302,24 +288,11 @@ const delCartBtn = (valueid) => {
     let index = cart.findIndex((val) => val.id == valueid);
     let findIndex = databaseProduct.findIndex((val) => val.id == valueid);
 
-    let count = cart[index].qty;
-    let updateStock = 
-        {
-            id: valueid,
-            sku: databaseProduct[findIndex].sku,
-            image: databaseProduct[findIndex].image,
-            name: databaseProduct[findIndex].name,
-            category: databaseProduct[findIndex].category,
-            stock: databaseProduct[findIndex].stock + count,
-            price: databaseProduct[findIndex].price,
-            expire: databaseProduct[findIndex].expire
-        };
-    databaseProduct[findIndex] = updateStock;
+    databaseProduct[findIndex].stock += cart[index].qty;
     printData(databaseProduct);
 
     cart.splice(index, 1);
     printCart();
-    
 };
 
 const changeQty = (action, valueid) => {
@@ -329,31 +302,11 @@ const changeQty = (action, valueid) => {
     let qty = cart[cartIndex].qty;
         if (action == "plus"){
             if (databaseProduct[findIndex].stock > 0){
-                let updateStock = 
-                    {
-                        id: valueid,
-                        sku: databaseProduct[findIndex].sku,
-                        image: databaseProduct[findIndex].image,
-                        name: databaseProduct[findIndex].name,
-                        category: databaseProduct[findIndex].category,
-                        stock: databaseProduct[findIndex].stock - 1,
-                        price: databaseProduct[findIndex].price,
-                        expire: databaseProduct[findIndex].expire
-                    };
-                databaseProduct[findIndex] = updateStock;
+                databaseProduct[findIndex].stock -= 1;
                 printData(databaseProduct);
 
-                let compile = 
-                    {
-                        id: valueid,
-                        sku: databaseProduct[findIndex].sku,
-                        image: databaseProduct[findIndex].image,
-                        name: databaseProduct[findIndex].name,
-                        price: databaseProduct[findIndex].price,
-                        qty: qty + 1,
-                        subtotal: (qty + 1) * databaseProduct[findIndex].price
-                    };
-                cart[cartIndex] = compile;
+                cart[cartIndex].qty += 1;
+                cart[cartIndex].subtotal = cart[cartIndex].qty * cart[cartIndex].price;
                 printCart();
             } else {
                 alert(`Stock Barang Habis`);
@@ -362,45 +315,14 @@ const changeQty = (action, valueid) => {
             }
         } else if (action == "minus"){
             if(cart[cartIndex].qty > 1){
-                let updateStock = 
-                    {
-                        id: valueid,
-                        sku: databaseProduct[findIndex].sku,
-                        image: databaseProduct[findIndex].image,
-                        name: databaseProduct[findIndex].name,
-                        category: databaseProduct[findIndex].category,
-                        stock: databaseProduct[findIndex].stock + 1,
-                        price: databaseProduct[findIndex].price,
-                        expire: databaseProduct[findIndex].expire
-                    };
-                databaseProduct[findIndex] = updateStock;
+                databaseProduct[findIndex].stock += 1;
                 printData(databaseProduct);
-        
-                let compile = 
-                    {
-                        id: valueid,
-                        sku: databaseProduct[findIndex].sku,
-                        image: databaseProduct[findIndex].image,
-                        name: databaseProduct[findIndex].name,
-                        price: databaseProduct[findIndex].price,
-                        qty: qty - 1,
-                        subtotal: (qty - 1) * databaseProduct[findIndex].price
-                    };
-                cart[cartIndex] = compile;
+
+                cart[cartIndex].qty -= 1;
+                cart[cartIndex].subtotal = cart[cartIndex].qty * cart[cartIndex].price;
                 printCart() 
             } else if (cart[cartIndex].qty <= 1){
-                let updateStock = 
-                    {
-                        id: valueid,
-                        sku: databaseProduct[findIndex].sku,
-                        image: databaseProduct[findIndex].image,
-                        name: databaseProduct[findIndex].name,
-                        category: databaseProduct[findIndex].category,
-                        stock: databaseProduct[findIndex].stock + 1,
-                        price: databaseProduct[findIndex].price,
-                        expire: databaseProduct[findIndex].expire
-                    };
-                databaseProduct[findIndex] = updateStock;
+                databaseProduct[findIndex].stock += 1;
                 printData(databaseProduct);
 
                 let cartIndex = cart.findIndex((val) => val.id == valueid);
@@ -411,8 +333,28 @@ const changeQty = (action, valueid) => {
         console.log(cart)
 };
 
-const clearCart = () => {
-    cart = [];
-    printCart();
-};
+const deleteItem = () => {
+    // 1. Mengakses setiap data product cart satu per satu --> looping --> forEach
+    // 2. Mengetahui apakah product tersebut dipilih => getElementById --> checkid
+        // 3. Jika checkbox dari product bernilai true, kita ambil datanya --> if(condition)
+        // 4. Mengambil qty data product index, kemudian reassign ke stock --> += 
+        // 5. menghapus data product pada cart berdasarkan index yang kita dapatkan sebelumnya --> splice
 
+        // 6. jika checkbox bernilai false, maka product akan tetap ada
+        // 7. Refresh tampilan product dan juga keranjang
+
+        let selectedItem = [];
+        cart.forEach((val, idx) => {
+            if (document.getElementById(`checkitem${val.id}`).checked){
+                let findIndex = databaseProduct.findIndex((value) => value.id == val.id)
+                databaseProduct[findIndex].stock += val.qty;    
+                selectedItem.push(val.id);
+            }
+        });
+        selectedItem.forEach((val, idx) => {
+            let cartIndex = cart.findIndex((value) => value.id == val)
+            cart.splice(cartIndex, 1);
+        })
+    printCart()
+    printData()
+};
