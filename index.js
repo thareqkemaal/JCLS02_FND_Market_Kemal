@@ -224,6 +224,9 @@ class BuyProduct {
     };
 };
 
+// data penampung cart
+let cart = [];
+
 // button function
 const printCart = () => {
     let list = cart.map ((val, idx) => {
@@ -246,8 +249,6 @@ const printCart = () => {
     document.getElementById("cartlist").innerHTML = list.join("");
 };
 
-// data penampung cart
-let cart = [];
 
 const buyBtn = (valueid) => {
     // mengurangi stok pada database
@@ -358,3 +359,82 @@ const deleteItem = () => {
     printCart()
     printData()
 };
+
+/////////////////////////// CHECKOUT FEATURE //////////////////////////////////////
+let arr = [];
+
+const printPayment = (data = arr) => {
+    let list = data.map ((val, idx) => {
+        return `
+        <tr>
+        <td>${val.sku}</td>
+        <td>Rp. ${val.subtotal.toLocaleString("id")}</td>
+        </tr>`
+    });
+    document.getElementById("checkout").innerHTML = list.join("");
+};
+
+const checkoutBtn = () => {
+    cart.forEach((val, idx) => {
+        if (document.getElementById(`checkitem${val.id}`).checked == true){
+            arr.push({id: val.id, sku: val.sku, subtotal: val.subtotal});
+        }
+    });
+
+    arr.forEach((val, idx) => {
+        let cartIndex = cart.findIndex((value) => value.id == val.id)
+        cart.splice(cartIndex, 1);
+    });
+    console.log(`ini cart`, cart);
+    console.log(`ini arr`, arr);
+
+    printCart();
+    printPayment();
+
+    let sum = 0; // string
+    arr.forEach((val, idx) => {
+        if (arr[idx].subtotal > 0){
+            sum += arr[idx].subtotal;
+        }
+    });
+    console.log(sum);
+
+    let summary = `Rp. ${sum.toLocaleString("id")}`
+    document.getElementById("sum").innerHTML = summary;
+};
+
+const paymentBtn = () => {
+    let cash = parseInt(document.getElementById("cash").value);
+        console.log(`Ini pembayaran`, cash)
+    let sum = 0; // string
+    arr.forEach((val, idx) => {
+        if (arr[idx].subtotal > 0){
+            sum += arr[idx].subtotal;
+        }
+    }); 
+    let totalPayment = parseInt(sum);
+        console.log(`Ini totalpayment`, totalPayment);
+
+    let calculate = cash - totalPayment;
+        console.log(`Ini calculate`, calculate);
+
+    if (calculate == 0){
+        alert(`Pembelian Anda Berhasil✅`);
+        arr.splice(0, arr.length);
+        printPayment();
+        document.getElementById("sum").innerHTML = null;
+        document.getElementById("cash").value = null;
+    } else if (calculate > 0){
+        alert(`Pembelian Anda Berhasil✅. \nBerikut Kembalian Anda Rp. ${calculate.toLocaleString("id")}`);
+        arr.splice(0, arr.length);
+        printPayment();
+        document.getElementById("sum").innerHTML = null;
+        document.getElementById("cash").value = null;
+    } else if (calculate < 0){
+        let minus = -calculate;
+        let text = `Maaf Uang Anda Kurang Rp. ${minus.toLocaleString("id")}`
+        document.getElementById("cashdisplay").innerHTML = text;
+        document.getElementById("cash").value = null;
+    }
+};
+

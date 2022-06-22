@@ -69,6 +69,7 @@
         <fieldset>
             <legend>Cart List</legend>
             <button type="button" onclick="deleteItem()">Delete Item</button>
+            <button type="button" onclick="checkoutBtn()">Proceed to Checkout</button>
             <br>
             <table>
                 <thead>
@@ -87,6 +88,34 @@
 
                 </tbody>
             </table>
+        </fieldset>
+        <fieldset>
+            <legend>Checkout</legend>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Sub Total</th>
+                    </tr>
+                </thead>
+                <tbody id="checkout">
+
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Total Payment</th>
+                        <th style="text-align: left;" id="sum"></th>
+                    </tr>
+                    <tr>
+                        <th>Cash on Payment</th>
+                        <th><input id="cash" type="number" placeholder="Input Your Payment">
+                            <button id="payment" type="button" onclick="paymentBtn()">Payment</button></th>
+                    </tr>
+                </thead>
+            </table>
+            <h3 id="cashdisplay"></h3>
         </fieldset>
     </div>
 </body>
