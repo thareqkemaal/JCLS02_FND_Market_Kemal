@@ -26,15 +26,14 @@ let databaseProduct = [
 
 // console.log(databaseProduct);
 ////////////////////////////// USER LOGIN //////////////////////////////////
-let userName = [];
+let userName = '';
 
 const loginBtn = () => {
-    user = document.getElementById("user").value;
-    if (user == ''){
+    userName = document.getElementById("user").value;
+    if (userName == ''){
         alert(`Silahkan Login Terlebih Dahulu⚠️`);
     } else {
-        alert(`Selamat Datang, ${user} !`);
-        userName.push(user);
+        alert(`Selamat Datang, ${userName} !`);
     }
 
     console.log(userName);
@@ -156,15 +155,15 @@ const filter = () => {
         objFilter.price = parseInt(form.elements["filprice"].value);
     };
     
-    console.log(objFilter);
+    //console.log(objFilter);
     
     let result = [];
     databaseProduct.forEach((val) => {
         let databaseKeys = Object.keys(val);
         let filterKeys = Object.keys(objFilter); // data yang diinput / dicari
 
-        console.log(databaseKeys);
-        console.log(filterKeys);
+        //console.log(databaseKeys);
+        //console.log(filterKeys);
         
         let checkFilter = [];
         databaseKeys.forEach((value) => {
@@ -176,7 +175,7 @@ const filter = () => {
                 };
             };
         });
-        console.log(checkFilter);
+        //console.log(checkFilter);
         if (!checkFilter.includes(false)){
             result.push(val);
         };
@@ -262,12 +261,8 @@ const printCart = () => {
     document.getElementById("cartlist").innerHTML = list.join("");
 };
 
-
 const buyBtn = (valueid) => {
-
-if (userName == ''){
-    alert(`Silahkan Login Terlebih Dahulu`);
-} else {
+if (userName){
     // mengurangi stok pada database
     let findIndex = databaseProduct.findIndex((val) => val.id == valueid)
     let cartIndex = cart.findIndex((val) => val.id == valueid)
@@ -299,8 +294,12 @@ if (userName == ''){
         printData(databaseProduct);
         printCart();
     }
-    console.log(cart);
+    //console.log(cart);
+} else {
+    alert(`Silahkan Login Terlebih Dahulu⚠️`);
 }
+
+console.log(userName);
 };
 
 const delCartBtn = (valueid) => {
@@ -349,7 +348,7 @@ const changeQty = (action, valueid) => {
                 printCart();
             }
         } 
-        console.log(cart)
+        //console.log(cart)
 };
 
 const deleteItem = () => {
@@ -435,24 +434,26 @@ const paymentBtn = () => {
         arr.splice(0, arr.length);
         printPayment();
         document.getElementById("sum").innerHTML = `Rp. 0,-`;
-        document.getElementById("cash").value = null;
-        document.getElementById("user").value = null;
+        document.getElementById("cash").value = '';
+        document.getElementById("user").value = '';
         inputReport(totalPayment);
         printReport();
+        userName = '';
     } else if (calculate > 0){
         alert(`Pembelian Anda Berhasil✅. \nBerikut Kembalian Anda Rp. ${calculate.toLocaleString("id")}`);
         arr.splice(0, arr.length);
         printPayment();
         document.getElementById("sum").innerHTML = `Rp. 0,-`;
-        document.getElementById("cash").value = null;
-        document.getElementById("user").value = null;
+        document.getElementById("cash").value = '';
+        document.getElementById("user").value = '';
         inputReport(totalPayment);
         printReport();
+        userName = '';
     } else if (calculate < 0){
         let minus = -calculate;
         let text = `Maaf Uang Anda Kurang Rp. ${minus.toLocaleString("id")}`
         document.getElementById("cashdisplay").innerHTML = text;
-        document.getElementById("cash").value = null;
+        document.getElementById("cash").value = '';
         printReport();
     }
 };
@@ -471,10 +472,7 @@ let reportArr = [];
 
 const inputReport = (totalPayment) => {
 
-    let user = '';
-    for (let i = 0; i < userName.length; i++){
-        user = userName[i];
-    }
+    let user = userName;
 
     let today = new Date();
     let dd = String(today.getDate()).padStart(2, '0');
@@ -508,4 +506,3 @@ const printReport = () => {
     let printTotal = `Total Omzet Rp. ${total.toLocaleString("id")},-`
     document.getElementById("displayomzet").innerHTML = printTotal;
 };
-
